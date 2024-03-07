@@ -5,7 +5,9 @@ using UnityEngine.InputSystem;
 using TMPro;
 public class PlayerController : MonoBehaviour
 {
-    public float speed = 0;
+    // public float speed = 0;
+    public float rotationSpeed = 100.0f;
+    public float movementSpeed = 5.0f;
     public TextMeshProUGUI countText;
     public GameObject winTextObject;
     public GameObject loseTextObject;
@@ -48,8 +50,19 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate() 
     {
-        Vector3 movement = new Vector3 (movementX, 0.0f, movementY);
-        rb.AddForce(movement * speed);
+        // Move like a ball
+        // Vector3 movement = new Vector3 (movementX, 0.0f, movementY);
+        // rb.AddForce(movement * speed);
+
+        // Move like a car
+        // Rotate left and right
+        transform.Rotate(Vector3.forward * movementX * rotationSpeed * Time.deltaTime);
+        
+        // Move forward and backward
+        // if (movementY > 0)
+        Vector3 movement = transform.up * movementY * movementSpeed * Time.deltaTime;
+        rb.MovePosition(rb.position + movement);
+
     }
 
     void OnTriggerEnter(Collider other) 
