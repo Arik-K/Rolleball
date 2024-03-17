@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using TMPro;
+using System.IO;
+
 public class PlayerController : MonoBehaviour
 {
     // public float speed = 0;
@@ -17,6 +19,9 @@ public class PlayerController : MonoBehaviour
     private float movementX;
     private float movementY;
 
+    private string filePath;
+    private StreamWriter writer;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -26,6 +31,9 @@ public class PlayerController : MonoBehaviour
         SetCountText();
         winTextObject.SetActive(false);
         loseTextObject.SetActive(false);
+
+        filePath = Path.Combine(Application.dataPath, "myPath.txt");
+        writer = File.AppendText(filePath);
     }
 
     void OnMove(InputValue movementValue)
@@ -63,6 +71,19 @@ public class PlayerController : MonoBehaviour
         Vector3 movement = transform.up * movementY * movementSpeed * Time.deltaTime;
         rb.MovePosition(rb.position + movement);
 
+        // Log
+        LogPositionAndRotation();
+
+    }
+
+    void LogPositionAndRotation()
+    {
+        float timestamp = Time.time;
+        Vector3 position = transform.position;
+        Quaternion rotation = transform.rotation;
+        float rotationY = rotation.eulerAngles.y;
+        writer.WriteLine($"{timestamp} {position.x} {position.y} {position.z} {rotationY}");
+        writer.Flush();
     }
 
     void OnTriggerEnter(Collider other) 
@@ -83,4 +104,12 @@ public class PlayerController : MonoBehaviour
        }
         
    }
+
+    private void OnDestroy()
+    {
+        if (writer != null)
+        {
+            writer.Close();
+        }
+    }
 }
